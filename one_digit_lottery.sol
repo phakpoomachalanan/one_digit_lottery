@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0
+
 pragma solidity >=0.7.0 <0.9.0;
 
 contract lottery {
@@ -6,7 +8,7 @@ contract lottery {
         address addr;
     }
 
-    bool[5] isChoose = [false];
+    bool[5] isChoose = [false, false, false, false, false];
 
     address public owner;
     uint private T1;
@@ -34,18 +36,15 @@ contract lottery {
         require(msg.value == 3 ether, "3 ETH");
         require(msg.sender == owner, "Owner only");
 
-        reward += 3 ether;
-
-        if (startTime == 0) {
-            startTime = block.timestamp;
-        }
+        reward = msg.value;
+        startTime = block.timestamp;
 
         ownerCommit = keccak256(abi.encodePacked(bytes32(choice), bytes32(salt)));
     }
 
     function addUser(uint choice) public payable {
         require(msg.value == 1 ether, "1 ETH");
-        require(numUser <= 5, "Full");
+        require(numUser < 5, "Full");
         require(startTime != 0 && block.timestamp - startTime <= T1, "Too late");
         require(isChoose[choice] == false, "Already chosen");
 
@@ -89,7 +88,7 @@ contract lottery {
     }
 
     function withdraw() public payable {
-        require(block.timestamp >= startTime + T1 + T2, "Please wait");
+        require(startTime != 0 && block.timestamp >= startTime + T1 + T2, "Please wait");
         require(isRevealed == false, "Already reveled");
 
         for(uint i = 0; i < numUser; i++) {
