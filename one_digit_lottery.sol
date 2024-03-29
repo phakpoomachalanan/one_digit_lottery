@@ -45,7 +45,7 @@ contract lottery {
 
     function addUser(uint choice) public payable {
         require(msg.value == 1 ether, "1 ETH");
-        require(numUser < 5, "Full");
+        require(numUser <= 5, "Full");
         require(startTime != 0 && block.timestamp - startTime <= T1, "Too late");
         require(isChoose[choice] == false, "Already chosen");
 
